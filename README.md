@@ -33,7 +33,9 @@ Orange
 
 # This project runs on a Website: https://vercel.com/jantom/yes-or-no-bot
 If you dont know how to launch it just click on the link above this ^^^
+
 it works on any OS i think, I only use Windows 11.
+
 A screenshot of the basic background and how it looks like:
 <img width="1133" height="811" alt="Snímek obrazovky 2026-09-26 183221" src="https://github.com/user-attachments/assets/555cae27-2965-426c-9c53-a5a8f67cc485" />
 
