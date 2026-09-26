@@ -77,6 +77,13 @@
             margin-bottom: 10px;
         }
 
+        .cyl-input-wrap {
+            position: relative;
+            width: 100%;
+            max-width: 480px;
+            height: 60px;
+        }
+
         .cyl-input {
             width: 100%;
             height: 100%;
@@ -143,14 +150,14 @@
             height: 18px;
             border: 3.5px solid #ffd700;
             border-radius: 50%;
-            box-shadow: 0 0 15px #ffd700, inset 0 0 10px;
+            box-shadow: 0 0 15px #ffd700, inset 0 0 10px #ffd700;
             display: none;
             animation: haloFloat 2s ease-in-out infinite alternate;
         }
 
         @keyframes haloFloat {
             0% { transform: translateX(-50%) translateY(0); }
-            100% {transform: translateX(-50%) translateY(-5px); }
+            100% { transform: translateX(-50%) translateY(-5px); }
         }
 
         .cyl-response.type-divine {
@@ -218,6 +225,15 @@
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
+        .preset-dot {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 2px solid #ffffff;
+            transition: transform 0.2s ease;
+        }
+
         .preset-dot:hover {
             transform: scale(1.2);
         }
@@ -282,6 +298,11 @@
         }
 
         .modal-btn.cancel {
+            background: #ffd700;
+            color: #000000;
+        }
+
+        .modal-btn.confirm {
             background: #2a2d3d;
             color: #ffffff;
         }
@@ -334,7 +355,7 @@
         <button id="sendBtn" class="cyl-btn">SEND</button>
     </div>
 
-    <div class="preset-drawer id" id="presetDrawer"></div>
+    <div class="preset-drawer" id="presetDrawer"></div>
 
     <div id="warnModal" class="modal-overlay">
         <div class="modal-box">
@@ -342,7 +363,7 @@
             <div class="modal-desc">Are you sure you wanna skip this and not screenshot it? Thats pretty rare bro!</div>
             <div class="modal-btns">
                 <button id="modalKeep" class="modal-btn cancel">KEEP IT</button>
-                <button id="modalSkip" class="modal-btn confirn">SKIP ANYWAY</button>
+                <button id="modalSkip" class="modal-btn confirm">SKIP ANYWAY</button>
             </div>
         </div>
     </div>
@@ -368,11 +389,11 @@
         let currentOutcome = null;
 
         const presets = {
-         "Cyberpunk": { bg: "#0d0f18", inputBg: "#16192b", inputBorder: "#00f0ff", btnBg: "#ff0055", btnBorder: "#ffffff", particle: "#00f0ff" },
+            "Cyberpunk": { bg: "#0d0f18", inputBg: "#16192b", inputBorder: "#00f0ff", btnBg: "#ff0055", btnBorder: "#ffffff", particle: "#00f0ff" },
             "Emerald": { bg: "#061a14", inputBg: "#0b2e23", inputBorder: "#10b981", btnBg: "#059669", btnBorder: "#a7f3d0", particle: "#34d399" },
             "Midnight": { bg: "#0f081d", inputBg: "#1c0f35", inputBorder: "#a855f7", btnBg: "#7e22ce", btnBorder: "#e9d5ff", particle: "#c084fc" },
             "Sunset": { bg: "#1a0c1a", inputBg: "#2d152b", inputBorder: "#f43f5e", btnBg: "#fb923c", btnBorder: "#fef08a", particle: "#f43f5e" },
-            "Mono": { bg: "#121212", inputBg: "#1e1e1e", inputBorder: "#444444", btnBg: "#2d2d2d", btnBorder: "#888888", particle: "#666666" }   
+            "Mono": { bg: "#121212", inputBg: "#1e1e1e", inputBorder: "#444444", btnBg: "#2d2d2d", btnBorder: "#888888", particle: "#666666" }
         };
 
         const outcomes = [
@@ -393,7 +414,7 @@
             document.documentElement.style.setProperty("--bg", p.bg);
             document.documentElement.style.setProperty("--input-bg", p.inputBg);
             document.documentElement.style.setProperty("--input-border", p.inputBorder);
-            document.documentElement.style.setProperty("--btn-bg", btnBg);
+            document.documentElement.style.setProperty("--btn-bg", p.btnBg);
             document.documentElement.style.setProperty("--btn-border", p.btnBorder);
             document.documentElement.style.setProperty("--particle", p.particle);
         }
@@ -404,7 +425,7 @@
             dot.style.background = presets[key].btnBg;
             dot.title = key;
             dot.onclick = () => applyPreset(key);
-            presetDrawer.appendChild(dot)
+            presetDrawer.appendChild(dot);
         });
 
         applyPreset("Cyberpunk");
@@ -425,7 +446,7 @@
         }));
 
         const binaryColumns = Math.floor(width / 20);
-        const binaryDrops = Array.from({ length: binaryColumns }, () => Math.floor(Math.Random() * -50));
+        const binaryDrops = Array.from({ length: binaryColumns }, () => Math.floor(Math.random() * -50));
         let goldDust = [];
 
         function renderBG() {
@@ -467,118 +488,119 @@
                         binaryDrops[i] = 0;
                     }
                     binaryDrops[i]++;
-                })
+                });
             }
-        }
 
-        goldDust.forEach((p) => {
-            p.x += p.vx;
-            p.y += p.vy;
-            p.alpha -= 0.015;
+            goldDust.forEach((p) => {
+                p.x += p.vx;
+                p.y += p.vy;
+                p.alpha -= 0.015;
 
-            if (p.alpha > 0) {
-                ctx.fillStyle = `rgba(255, 215, 0, ${p.alpha})`;
-                ctx.beginPath();
-                ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-                ctx.fill();
-            }
-        });
-
-        goldDust = goldDust.filter(p => p.alpha > 0);
-        requestAnimationFrame(renderBG);
-    }
-
-    renderBG();
-
-    function triggerDivineFX() {
-        divineFlash.style.opacity = "1";
-        setTimeout(() => { divineFlash.style.opacity = "0"; }, 200);
-
-        const rect = responseBox.getBoundingClientRect();
-        const cx = rect.left + rect.width / 2;
-        const cy = rect.top + rect.height / 2;
-
-        for (let i = 0; i < 80; i++) {
-            const angle = Math.random() * Math.PI * 2;
-            const speed = Math.random() * 8 + 2;
-            goldDust.push({
-                x: cx,
-                y: cy,
-                vx: Math.cos(angle) * speed,
-                vy: Math.sin(angle) * speed,
-                size: Math.random() * 4 + 1,
-                alpha: 1.0
+                if (p.alpha > 0) {
+                    ctx.fillStyle = `rgba(255, 215, 0, ${p.alpha})`;
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                    ctx.fill();
+                }
             });
-        }
-    }
 
-    function executeRoll() {
-        let selected;
-        if (forcedOutcome) {
-            selected = forcedOutcome;
-        } else {
-            const rand = Math.random() * 100;
-            let cumulative = 0;
-            for (let o of outcomes) {
-                cumulative += o.weight;
-                if (rand <= cumulative) {
-                    selected = 0;
-                    break;
+            goldDust = goldDust.filter(p => p.alpha > 0);
+            requestAnimationFrame(renderBG);
+        }
+
+        renderBG();
+
+        function triggerDivineFX() {
+            divineFlash.style.opacity = "1";
+            setTimeout(() => { divineFlash.style.opacity = "0"; }, 200);
+
+            const rect = responseBox.getBoundingClientRect();
+            const cx = rect.left + rect.width / 2;
+            const cy = rect.top + rect.height / 2;
+
+            for (let i = 0; i < 80; i++) {
+                const angle = Math.random() * Math.PI * 2;
+                const speed = Math.random() * 8 + 2;
+                goldDust.push({
+                    x: cx,
+                    y: cy,
+                    vx: Math.cos(angle) * speed,
+                    vy: Math.sin(angle) * speed,
+                    size: Math.random() * 4 + 1,
+                    alpha: 1.0
+                });
+            }
+        }
+
+        function executeRoll() {
+            let selected;
+            if (forcedOutcome) {
+                selected = forcedOutcome;
+            } else {
+                const rand = Math.random() * 100;
+                let cumulative = 0;
+                for (let o of outcomes) {
+                    cumulative += o.weight;
+                    if (rand <= cumulative) {
+                        selected = o;
+                        break;
+                    }
                 }
             }
-        }
-    }
 
-    currentOutcome = selected;
+            currentOutcome = selected;
 
-    responseBox.className = "cyl-response";
-    pctIndicator.classList.add("visible");
-    pctIndicator.textContent = `CHANCE: ${selected.pct}`;
+            responseBox.className = "cyl-response";
+            pctIndicator.classList.add("visible");
+            pctIndicator.textContent = `CHANCE: ${selected.pct}`;
 
-    if (selected.type === "divine") {
-        responseBox.classList.add("type-divine");
-        pctIndicator.style.color = "#ffd700";
-        triggerDivineFX();
-    } else if (selected.type.includes("yes") || selected.type === "legendary") {
-        responseBox.classList.add("type-yes");
-        pctIndicator.style.color = "#10b981";
-    } else {
-        responseBox.classList.add("type-no");
-        pctIndicator.style.color = "#ef4444"
-    }
+            if (selected.type === "divine") {
+                responseBox.classList.add("type-divine");
+                pctIndicator.style.color = "#ffd700";
+                triggerDivineFX();
+            } else if (selected.type.includes("yes") || selected.type === "legendary") {
+                responseBox.classList.add("type-yes");
+                pctIndicator.style.color = "#10b981";
+            } else {
+                responseBox.classList.add("type-no");
+                pctIndicator.style.color = "#ef4444";
+            }
 
-    function handleRollRequest() {
-        if (currentOutcome && currentOutcome.weight <= 1.0 && !opsecMode) {
-            warnModal.classList.add("active");
-            return;
-        }
-        executeRoll();
-    }
-
-    sendBtn.onclick = handleRollRequest;
-    
-    modalKeep.onclick = () => { warnModal.classList.remove("active"); };
-    modalSkip.onclick = () => { warnModal.classList.remove("active"); executeRoll(); };
-
-    window.addEventListener("keydown", (e) =>  {
-        if (e.shiftKey && e.altKey && (e.key === "A" || e.key === "a")) {
-            opsecMode = true;
-            bgMode = "binary";
-            forcedOutcome = outcomes[0];
-            headerTitle.textContent = "[OPSEC MODE ACTIVE]";
-            headerTitle.style.color = "#00ff66";
-            toast.classList.add("visible");
-            setTimeout(() => toast.classList.remove("visible"), 2500);
+            responseText.textContent = selected.text;
         }
 
-        if (e.shiftKey && e.altKey && (e.key === "D" || e.key === "d")) {
-            opsecMode = false;
-            bgMode = "constellation";
-            forcedOutcome = null;
-            headerTitle.textContent = "DECISION BOT";
-            headerTitle.style.color = "#ffffff";
+        function handleRollRequest() {
+            if (currentOutcome && currentOutcome.weight <= 1.0 && !opsecMode) {
+                warnModal.classList.add("active");
+                return;
+            }
+            executeRoll();
         }
-    });
+
+        sendBtn.onclick = handleRollRequest;
+
+        modalKeep.onclick = () => { warnModal.classList.remove("active"); };
+        modalSkip.onclick = () => { warnModal.classList.remove("active"); executeRoll(); };
+
+        window.addEventListener("keydown", (e) => {
+            if (e.shiftKey && e.altKey && (e.key === "A" || e.key === "a")) {
+                opsecMode = true;
+                bgMode = "binary";
+                forcedOutcome = outcomes[0];
+                headerTitle.textContent = "[OPSEC MODE ACTIVE]";
+                headerTitle.style.color = "#00ff66";
+                toast.classList.add("visible");
+                setTimeout(() => toast.classList.remove("visible"), 2500);
+            }
+
+            if (e.shiftKey && e.altKey && (e.key === "D" || e.key === "d")) {
+                opsecMode = false;
+                bgMode = "constellation";
+                forcedOutcome = null;
+                headerTitle.textContent = "DECISION BOT";
+                headerTitle.style.color = "#ffffff";
+            }
+        });
     </script>
 </body>
 </html>
