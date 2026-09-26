@@ -10,7 +10,7 @@ PRESETS = {
         "input_border": "#00f0ff",
         "btn_bg": "#ff0055",
         "btn_border": "#ffffff",
-        "particle": "#00f0ff"
+        "particle": "#00f0ff",
     },
     "Emerald": {
         "bg": "#061a14",
@@ -33,7 +33,7 @@ PRESETS = {
         "input_bg": "#2d152b",
         "input_border": "#f43f5e",
         "btn_bg": "#fb923c",
-        "btm_border": "#fef08a",
+        "btn_border": "#fef08a",
         "particle": "#f43f5e",
     },
     "Mono": {
@@ -52,7 +52,6 @@ OUTCOMES = [
         "weight": 0.5,
         "type": "divine",
         "pct": "0.5%",
-    
     },
     {
         "text": "1000% ABSOLUTELY!",
@@ -77,6 +76,7 @@ OUTCOMES = [
 
 
 class DecisionBotPython:
+
     def __init__(self, root):
         self.root = root
         self.root.title("OPSEC Decision Bot")
@@ -89,10 +89,11 @@ class DecisionBotPython:
         self.opsec_active = False
         self.forced_outcome = None
         self.current_outcome = None
+
         self.particles = [
             {
                 "x": random.randint(0, 800),
-                "y": random.randint(0,650),
+                "y": random.randint(0, 650),
                 "vx": random.uniform(-1, 1),
                 "vy": random.uniform(-1, 1),
             }
@@ -189,9 +190,9 @@ class DecisionBotPython:
         self.lbl_title.configure(bg=self.current_theme["bg"])
         self.lbl_pct.configure(bg=self.current_theme["bg"])
         self.preset_frame.configure(bg=self.current_theme["bg"])
-        self.btn_send.confiure(
+        self.btn_send.configure(
             bg=self.current_theme["btn_bg"],
-            activebackround=self.current_theme["btn_border"]
+            activebackground=self.current_theme["btn_border"],
         )
         self.entry_q.configure(bg=self.current_theme["input_bg"])
 
@@ -297,8 +298,8 @@ class DecisionBotPython:
             and not self.opsec_active
         ):
             skip = messagebox.askyesno(
-                "Rare Outcome",
-                "Are you sure you wanna skip this and not screenshot it? Thats pretty rare bro!"
+                "Rare Outcome!",
+                "Are you sure you wanna skip this and not screenshot it? Thats pretty rare bro!",
             )
             if not skip:
                 return
@@ -307,7 +308,7 @@ class DecisionBotPython:
             selected = self.forced_outcome
         else:
             weights = [o["weight"] for o in OUTCOMES]
-            selected = random.choices(OUTCOMES, weights=weights, k=1[0])
+            selected = random.choices(OUTCOMES, weights=weights, k=1)[0]
 
         self.current_outcome = selected
         self.lbl_pct.configure(
@@ -371,6 +372,7 @@ class DecisionBotPython:
                     font=("Consolas", 12),
                     tags="bg",
                 )
+
         box_fill = self.current_theme["input_bg"]
         box_border = self.current_theme["input_border"]
         text_color = "#ffffff"
@@ -381,12 +383,12 @@ class DecisionBotPython:
             if otype == "divine":
                 self.color_shift = (self.color_shift + 0.05) % (2 * math.pi)
                 val = int(200 + 55 * math.sin(self.color_shift))
-                box_fill = f"{val:02x}a000"
+                box_fill = f"#{val:02x}a000"
                 box_border = "#ffd700"
                 font = ("Georgia", 11, "bold")
                 text_color = "#fff8dc"
 
-                # The stupid halo thingy
+                # Halo ring
                 self.canvas.create_oval(
                     320,
                     225,
