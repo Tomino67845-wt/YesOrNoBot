@@ -2,6 +2,7 @@
 An RNG Bot that responds to EVERY question you ask! But you need to know that it is RNG. He can say "Nah" or "Yeah" or even "DIVINE INTERVENTION SAYS YES"
 I will not update this project because this has no future but if im bored then you can expect new Yes or No variants!
 Current list of Yes and No variants:
+
 Yeah - Nah
 
 HELL YEAH! - Nope
