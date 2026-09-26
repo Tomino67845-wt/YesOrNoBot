@@ -20,3 +20,7 @@ I used python because its python...
 A project made for Hack club / Pixl!
 
 !Expect many more silly projects from me!
+
+Heres a link to play:
+
+https://yes-or-no-bot-two.vercel.app/
