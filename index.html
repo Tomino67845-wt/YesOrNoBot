@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OPSEC Decision Bot</title>
+    <style>
+        :root {
+            --bg: #0d0f18;
+            --input-bg: #16192b;
+            --input-border: #00f0ff;
+            --btn-bg: #ff0055;
+            --btn-border: #ffffff;
+            --particle: #00f0ff;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body, html {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: var(--bg);
+            color: #ffffff;
+            transition: background-color 0.4s ease;
+        }
+
+        #bgCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        #divineFlash {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 1) 0%, rgba(255, 248, 220, 0.9) 50%, rgba(255, 215, 0, 0) 100%);
+            z-index: 50;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.1s ease-out;
+        }
+
+        .app-container {
+            position: relative;
+            z-index: 10;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 24px;
+            padding: 20px;
+        }
+
+        .header-title {
+            font-family: "Courier New", Courier, monospace;
+            font-size: 1.5rem;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            color: #ffffff;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+            margin-bottom: 10px;
+        }
+
+        .cyl-input {
+            width: 100%;
+            height: 100%;
+            background: var(--input-bg);
+            border: 2px solid var(--input-border);
+            border-radius: 30px;
+            color: #ffffff;
+            font-size: 1.1rem;
+            font-weight: 600;
+            text-align: center;
+            outline: none;
+            padding: 0 25px;
+            transition: all 0.3s ease;
+        }
+
+        .pct-indicator {
+            height: 20px;
+            font-family: "Courier New", Courier, monospace;
+            font-size: 0.9rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .pct-indicator.visible {
+            opacity: 1;
+        }
+
+        .cyl-response-wrap {
+            position: relative;
+            width: 100%;
+            max-width: 480px;
+            min-height: 80px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .cyl-response {
+            width: 100%;
+            height: 80px;
+            background: var(--input-bg);
+            border: 2px solid var(--input-border);
+            border-radius: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 0 30px;
+            text-align: center;
+            font-size: 1.25rem;
+            font-weight: 800;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .halo-ring {
+            position: absolute;
+            top: -18px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 140px;
+            height: 18px;
+            border: 3.5px solid #ffd700;
+            border-radius: 50%;
+            box-shadow: 0 0 15px #ffd700, inset 0 0 10px;
+            display: none;
+            animation: haloFloat 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes haloFloat {
+            0% { transform: translateX(-50%) translateY(0); }
+            100% {transform: translateX(-50%) translateY(-5px); }
+        }
+
+        .cyl-response.type-divine {
+            background: linear-gradient(135deg, #1c1400, #3a2800, #1c1400);
+            background-size: 200% 200%;
+            animation: divineShift 6s ease infinite;
+            border: 2px solid #ffd700;
+            color: #fff8dc;
+            font-family: "Georgia", "Times New Roman", serif;
+            letter-spacing: 3px;
+            text-shadow: 0 0 12px rgba(255, 215, 0, 0.8);
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.4);
+        }
+
+        .cyl-response.type-divine .halo-ring {
+            display: block;
+        }
+
+        @keyframes divineShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .cyl-response.type-yes {
+            color: #10b981;
+            border-color: #10b981;
+        }
+
+        .cyl-response.type-no {
+            color: #ef4444;
+            border-color: #ef4444;
+        }
+
+        .cyl-btn {
+            width: 100%;
+            max-width: 240px;
+            height: 55px;
+            background: var(--btn-bg);
+            border: 2px solid var(--btn-border);
+            border-radius: 28px;
+            color: #ffffff;
+            font-size: 1.1rem;
+            font-weight: 800;
+            letter-spacing: 2px;
+            cursor: pointer;
+            outline: none;
+            transition: all 0.2s ease;
+        }
+
+        .cyl-btn:active {
+            transform: scale(0.96);
+        }
+
+        .preset-drawer {
+            position: fixed;
+            bottom: 20px;
+            display: flex;
+            gap: 8px;
+            background: rgba(0, 0, 0, 0.6);
+            padding: 8px 16px;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            z-index: 20;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .preset-dot:hover {
+            transform: scale(1.2);
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal-box {
+            background: #121420;
+            border: 2px solid #ffd700;
+            border-radius: 20px;
+            padding: 25px;
+            max-width: 400px;
+            text-align: center;
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.3);
+        }
+
+        .modal-title {
+            color: #ffd700;
+            font-size: 1.2rem;
+            font-weight: 800;
+            margin-bottom: 12px;
+        }
+
+        .modal-desc {
+            font-size: 0.95rem;
+            color: #cccccc;
+            margin-bottom: 20px;
+            line-height: 1.4;
+        }
+
+        .modal-btns {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .modal-btn {
+            padding: 10px 20px;
+            border-radius: 12px;
+            border: none;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .modal-btn.cancel {
+            background: #2a2d3d;
+            color: #ffffff;
+        }
+
+        .toast {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-50px);
+            background: #00ff66;
+            color: #000000;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-family: monospace;
+            font-weight: 800;
+            z-index: 200;
+            opacity: 0;
+            transition: all 0.3s ease;
+            pointer-events: none;
+        }
+
+        .toast.visible {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="bgCanvas"></canvas>
+    <div id="divineFlash"></div>
+    <div id="toast" class="toast">Sudo apt install opsec mode activated!</div>
+
+    <div class="app-container">
+        <div id="headerTitle" class="header-title">DECISION BOT</div>
+
+        <div class="cyl-input-wrap">
+            <input type="text" id="questionInput" class="cyl-input" value="Should I follow my dreams?" placeholder="Ask your question...">
+        </div>
+
+        <div id="pctIndicator" class="pct-indicator"></div>
+
+        <div class="cyl-response-wrap">
+            <div id="responseBox" class="cyl-response">
+                <div class="halo-ring"></div>
+                <span id="responseText">READY</span>
+            </div>
+        </div>
+
+        <button id="sendBtn" class="cyl-btn">SEND</button>
+    </div>
+
+    <div class="preset-drawer id" id="presetDrawer"></div>
+
+    <div id="warnModal" class="modal-overlay">
+        <div class="modal-box">
+            <div class="modal-title">RARE OUTCOME DETECTED</div>
+            <div class="modal-desc">Are you sure you wanna skip this and not screenshot it? Thats pretty rare bro!</div>
+            <div class="modal-btns">
+                <button id="modalKeep" class="modal-btn cancel">KEEP IT</button>
+                <button id="modalSkip" class="modal-btn confirn">SKIP ANYWAY</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById("bgCanvas");
+        const ctx = canvas.getContext("2d");
+        const divineFlash = document.getElementById("divineFlash");
+        const toast = document.getElementById("toast");
+        const headerTitle = document.getElementById("headerTitle");
+        const pctIndicator = document.getElementById("pctIndicator");
+        const responseBox = document.getElementById("responseBox");
+        const responseText = document.getElementById("responseText");
+        const sendBtn = document.getElementById("sendBtn");
+        const warnModal = document.getElementById("warnModal");
+        const modalKeep = document.getElementById("modalKeep");
+        const modalSkip = document.getElementById("modalSkip");
+        const presetDrawer = document.getElementById("presetDrawer");
+
+        let bgMode = "constellation";
+        let opsecMode = false;
+        let forcedOutcome = null;
+        let currentOutcome = null;
+
+        const presets = {
+         "Cyberpunk": { bg: "#0d0f18", inputBg: "#16192b", inputBorder: "#00f0ff", btnBg: "#ff0055", btnBorder: "#ffffff", particle: "#00f0ff" },
+            "Emerald": { bg: "#061a14", inputBg: "#0b2e23", inputBorder: "#10b981", btnBg: "#059669", btnBorder: "#a7f3d0", particle: "#34d399" },
+            "Midnight": { bg: "#0f081d", inputBg: "#1c0f35", inputBorder: "#a855f7", btnBg: "#7e22ce", btnBorder: "#e9d5ff", particle: "#c084fc" },
+            "Sunset": { bg: "#1a0c1a", inputBg: "#2d152b", inputBorder: "#f43f5e", btnBg: "#fb923c", btnBorder: "#fef08a", particle: "#f43f5e" },
+            "Mono": { bg: "#121212", inputBg: "#1e1e1e", inputBorder: "#444444", btnBg: "#2d2d2d", btnBorder: "#888888", particle: "#666666" }   
+        };
+
+        const outcomes = [
+            { text: "DIVINE INTERVENTION SAYS YES", weight: 0.5, type: "divine", pct: "0.5%" },
+            { text: "1000% ABSOLUTELY!", weight: 1.0, type: "legendary", pct: "1.0%" },
+            { text: "NAH BRO NOT IN A MILLION YEARS", weight: 3.0, type: "rare_no", pct: "3.0%" },
+            { text: "HELL YEAH!", weight: 6.0, type: "rare_yes", pct: "6.0%" },
+            { text: "ABSOLUTELY NOT", weight: 6.0, type: "rare_no", pct: "6.0%" },
+            { text: "Of course", weight: 6.0, type: "rare_yes", pct: "6.0%" },
+            { text: "YES", weight: 20.0, type: "yes", pct: "20.0%" },
+            { text: "Yeah", weight: 20.0, type: "yes", pct: "20.0%" },
+            { text: "Nope", weight: 18.75, type: "no", pct: "18.75%" },
+            { text: "Nah", weight: 18.75, type: "no", pct: "18.75%" }
+        ];
+
+        function applyPreset(key) {
+            const p = presets[key];
+            document.documentElement.style.setProperty("--bg", p.bg);
+            document.documentElement.style.setProperty("--input-bg", p.inputBg);
+            document.documentElement.style.setProperty("--input-border", p.inputBorder);
+            document.documentElement.style.setProperty("--btn-bg", btnBg);
+            document.documentElement.style.setProperty("--btn-border", p.btnBorder);
+            document.documentElement.style.setProperty("--particle", p.particle);
+        }
+
+        Object.keys(presets).forEach(key => {
+            const dot = document.createElement("div");
+            dot.className = "preset-dot";
+            dot.style.background = presets[key].btnBg;
+            dot.title = key;
+            dot.onclick = () => applyPreset(key);
+            presetDrawer.appendChild(dot)
+        });
+
+        applyPreset("Cyberpunk");
+
+        let width = canvas.width = window.innerWidth;
+        let height = canvas.height = window.innerHeight;
+
+        window.onresize = () => {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+        };
+
+        const constellationParticles = Array.from({ length: 45 }, () => ({
+            x: Math.random() * width,
+            y: Math.random() * height,
+            vx: (Math.random() - 0.5) * 1.2,
+            vy: (Math.random() - 0.5) * 1.2
+        }));
+
+        const binaryColumns = Math.floor(width / 20);
+        const binaryDrops = Array.from({ length: binaryColumns }, () => Math.floor(Math.Random() * -50));
+        let goldDust = [];
+
+        function renderBG() {
+            ctx.clearRect(0, 0, width, height);
+
+            if (bgMode === "constellation") {
+                const particleColor = getComputedStyle(document.documentElement).getPropertyValue("--particle").trim();
+                ctx.fillStyle = particleColor;
+                ctx.strokeStyle = particleColor;
+
+                constellationParticles.forEach((p, i) => {
+                    p.x = (p.x + p.vx + width) % width;
+                    p.y = (p.y + p.vy + height) % height;
+
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, 2, 0, Math.PI * 2);
+                    ctx.fill();
+
+                    for (let j = i + 1; j < constellationParticles.length; j++) {
+                        const p2 = constellationParticles[j];
+                        const dist = Math.hypot(p.x - p2.x, p.y - p2.y);
+                        if (dist < 120) {
+                            ctx.globalAlpha = 1 - (dist / 120);
+                            ctx.beginPath();
+                            ctx.moveTo(p.x, p.y);
+                            ctx.lineTo(p2.x, p2.y);
+                            ctx.stroke();
+                            ctx.globalAlpha = 1;
+                        }
+                    }
+                });
+            } else if (bgMode === "binary") {
+                ctx.fillStyle = "rgba(0, 255, 102, 0.85)";
+                ctx.font = "14px monospace";
+                binaryDrops.forEach((y, i) => {
+                    const char = Math.random() > 0.5 ? "1" : "0";
+                    ctx.fillText(char, i * 20, y * 20);
+                    if (y * 20 > height && Math.random() > 0.975) {
+                        binaryDrops[i] = 0;
+                    }
+                    binaryDrops[i]++;
+                })
+            }
+        }
+
+        goldDust.forEach((p) => {
+            p.x += p.vx;
+            p.y += p.vy;
+            p.alpha -= 0.015;
+
+            if (p.alpha > 0) {
+                ctx.fillStyle = `rgba(255, 215, 0, ${p.alpha})`;
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        });
+
+        goldDust = goldDust.filter(p => p.alpha > 0);
+        requestAnimationFrame(renderBG);
+    }
+
+    renderBG();
+
+    function triggerDivineFX() {
+        divineFlash.style.opacity = "1";
+        setTimeout(() => { divineFlash.style.opacity = "0"; }, 200);
+
+        const rect = responseBox.getBoundingClientRect();
+        const cx = rect.left + rect.width / 2;
+        const cy = rect.top + rect.height / 2;
+
+        for (let i = 0; i < 80; i++) {
+            const angle = Math.random() * Math.PI * 2;
+            const speed = Math.random() * 8 + 2;
+            goldDust.push({
+                x: cx,
+                y: cy,
+                vx: Math.cos(angle) * speed,
+                vy: Math.sin(angle) * speed,
+                size: Math.random() * 4 + 1,
+                alpha: 1.0
+            });
+        }
+    }
+
+    function executeRoll() {
+        let selected;
+        if (forcedOutcome) {
+            selected = forcedOutcome;
+        } else {
+            const rand = Math.random() * 100;
+            let cumulative = 0;
+            for (let o of outcomes) {
+                cumulative += o.weight;
+                if (rand <= cumulative) {
+                    selected = 0;
+                    break;
+                }
+            }
+        }
+    }
+
+    currentOutcome = selected;
+
+    responseBox.className = "cyl-response";
+    pctIndicator.classList.add("visible");
+    pctIndicator.textContent = `CHANCE: ${selected.pct}`;
+
+    if (selected.type === "divine") {
+        responseBox.classList.add("type-divine");
+        pctIndicator.style.color = "#ffd700";
+        triggerDivineFX();
+    } else if (selected.type.includes("yes") || selected.type === "legendary") {
+        responseBox.classList.add("type-yes");
+        pctIndicator.style.color = "#10b981";
+    } else {
+        responseBox.classList.add("type-no");
+        pctIndicator.style.color = "#ef4444"
+    }
+
+    function handleRollRequest() {
+        if (currentOutcome && currentOutcome.weight <= 1.0 && !opsecMode) {
+            warnModal.classList.add("active");
+            return;
+        }
+        executeRoll();
+    }
+
+    sendBtn.onclick = handleRollRequest;
+    
+    modalKeep.onclick = () => { warnModal.classList.remove("active"); };
+    modalSkip.onclick = () => { warnModal.classList.remove("active"); executeRoll(); };
+
+    window.addEventListener("keydown", (e) =>  {
+        if (e.shiftKey && e.altKey && (e.key === "A" || e.key === "a")) {
+            opsecMode = true;
+            bgMode = "binary";
+            forcedOutcome = outcomes[0];
+            headerTitle.textContent = "[OPSEC MODE ACTIVE]";
+            headerTitle.style.color = "#00ff66";
+            toast.classList.add("visible");
+            setTimeout(() => toast.classList.remove("visible"), 2500);
+        }
+
+        if (e.shiftKey && e.altKey && (e.key === "D" || e.key === "d")) {
+            opsecMode = false;
+            bgMode = "constellation";
+            forcedOutcome = null;
+            headerTitle.textContent = "DECISION BOT";
+            headerTitle.style.color = "#ffffff";
+        }
+    });
+    </script>
+</body>
+</html>
