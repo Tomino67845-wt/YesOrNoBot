@@ -1,26 +1,32 @@
-# YesOrNoBot
-An RNG Bot that responds to EVERY question you ask! But you need to know that it is RNG. He can say "Nah" or "Yeah" or even "DIVINE INTERVENTION SAYS YES"
-I will not update this project because this has no future but if im bored then you can expect new Yes or No variants!
-Current list of Yes and No variants:
+An RNG bot that answers ANY question
 
-Yeah - Nah
+The YesOrNo Bot just answers your question with only Yes or No or one of those variants.
+The web is simple and bare bones with customizable colors and a secret mode that forces you to get the rarest roll.
+If you press Shift + Alt + A you will activate the top secret that i used for testing the animations "Sudo apt install opsec larper mode"
+A list of the variations:
 
-HELL YEAH! - Nope
+Yeah - Nope
 
-YES - ABSOLUTELY NOT
+YES - Nah
 
-Of course - NAH BRO NOT IN A MILLION YEARS
+Of course - ABSOLUTELY NOT!
 
-1000% ABSOLUTELY - -------
+HELL YEAH! - NAH BRO NOT IN A MILLION YEARS
 
-DIVINE INTERVENTION SAYS YES - ------
+1000% ABSOLUTELY - ----------
 
-If you press Shift + Alt + A you will get a guaranteed DIVINE INTERVENTION in the next roll and the background changes!
-I used python because its python...
-A project made for Hack club / Pixl!
+DIVINE INTERVENTION SAYS YES - ---------
 
-!Expect many more silly projects from me!
+And the list of background color themes:
 
-Heres a link to play:
+Green
 
-https://yes-or-no-bot-two.vercel.app/
+Basic
+
+Blue
+
+Purple
+
+Black
+
+Orange
