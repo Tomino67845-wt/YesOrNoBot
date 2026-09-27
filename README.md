@@ -28,4 +28,4 @@ or use this link to run it easily: https://yes-or-no-bot-two.vercel.app/
 
  No bugs currently that i noticed!
 
- This project is licensed under the MIT License - check out LICENSE.md for more details
+ ## This project is licensed under the MIT License - check out LICENSE.md for more details
