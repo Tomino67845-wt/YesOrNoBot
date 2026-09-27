@@ -23,3 +23,9 @@ Yes Or No Bot is a lightweight, zero-dependency decision tool built using pure H
    ```bash
    git clone [https://github.com/your-username/yes-or-no-bot.git](https://github.com/your-username/yes-or-no-bot.git)
 or use this link to run it easily: https://yes-or-no-bot-two.vercel.app/
+
+ ### Help
+
+ No bugs currently that i noticed!
+
+ This project is licensed under the MIT License - check out LICENSE.md for more details
