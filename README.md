@@ -8,7 +8,7 @@ Yes Or No Bot is a lightweight, zero-dependency decision tool built using pure H
 
 ## Screenshots
 
-![Yes Or No Bot Preview](preview.png)
+<img width="1133" height="811" alt="Snímek obrazovky 2026-09-26 183221" src="https://github.com/user-attachments/assets/33b570a3-bd48-4e1f-9fd9-5e8dd9f3b2f9" />
 
 ## Getting Started
 
@@ -22,3 +22,4 @@ Yes Or No Bot is a lightweight, zero-dependency decision tool built using pure H
 1. Download or clone the repository to your local machine:
    ```bash
    git clone [https://github.com/your-username/yes-or-no-bot.git](https://github.com/your-username/yes-or-no-bot.git)
+or use this link to run it easily: https://yes-or-no-bot-two.vercel.app/
