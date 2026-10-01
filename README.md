@@ -5,6 +5,7 @@ A minimalist, flat 2D decision-making web app with weighted RNG tiers, custom vi
 ## Description
 
 Yes Or No Bot is a lightweight, zero-dependency decision tool built using pure HTML, CSS, and Vanilla JS. It features a flat cylinder UI, dynamic canvas backgrounds, theme presets, and a weighted RNG engine. Outcomes range from common answers to a rare 1.0% outcome and a 0.5% "Divine Intervention" event complete with glowing halo aesthetics and light particle bursts. It runs completely offline without external frameworks or CDNs.
+If you press Shift + Alt + A will activate "Sudo apt install opsec Larper mode" and press D instead of A to deactivate it!
 
 I made this project in Python and HTML using VScode! I made this just for fun and to be my first project in the hack club community! I made it because my friend took me into hack club and because we wanted to make a CO-OP project where i had this idea. He said no so i made it as a solo project! Oh yeah and also credits to Citunek22 that got me into this project and the hack club community.
 
